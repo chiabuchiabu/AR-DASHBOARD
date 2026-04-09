@@ -1,0 +1,22 @@
+<h1></h1>
+
+
+<h2>Upload CSV</h2>
+
+{% if error %}
+<div style="color:red;">
+    {{ error }}
+</div>
+{% endif %}
+
+<form method="POST" enctype="multipart/form-data">
+
+<input type="file" name="file">
+
+<button type="submit">上傳</button>
+
+</form>
+
+<br>
+
+<a href="/data">查看資料</a>

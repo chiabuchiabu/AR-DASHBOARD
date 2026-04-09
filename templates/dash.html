@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>應收帳款儀表板</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+
+body{
+background:#f5f6fa;
+}
+
+.topbar{
+background:#1e293b;
+color:white;
+padding:15px 30px;
+}
+
+.card-box{
+border-radius:10px;
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+<!-- TOP BAR -->
+
+<div class="topbar d-flex">
+
+<h4 class="m-0">應收帳款儀表板</h4>
+
+<div class="ms-auto">
+
+今日日期：{{ today }}
+
+</div>
+
+</div>
+
+
+<div class="container-fluid mt-4 px-4">
+
+
+<!-- KPI 區塊 -->
+
+<div class="row g-3 mb-4">
+
+<div class="col-md-3">
+
+<div class="card card-box shadow-sm">
+
+<div class="card-body">
+
+<div class="text-muted small">欠款筆數</div>
+
+<h3>
+
+{{ total_count }}
+
+</h3>
+
+</div>
+
+</div>
+
+</div>
+
+
+<div class="col-md-3">
+
+<div class="card card-box shadow-sm">
+
+<div class="card-body">
+
+<div class="text-muted small">欠款總金額</div>
+
+<h3>
+
+$ {{ total_amount }}
+
+</h3>
+
+</div>
+
+</div>
+
+</div>
+
+
+<div class="col-md-3">
+
+<div class="card card-box shadow-sm">
+
+<div class="card-body">
+
+<div class="text-muted small">平均欠款天數</div>
+
+<h3>
+
+{{ avg_days }} 
+
+</h3>
+
+</div>
+
+</div>
+
+</div>
+
+
+<div class="col-md-3">
+
+<div class="card card-box shadow-sm">
+
+<div class="card-body">
+
+<div class="text-muted small">最久欠款天數</div>
+
+<h3>
+
+{{ max_days }} 
+
+</h3>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- CHART 區塊 (之後放 chart.js) -->
+
+<div class="row g-3 mb-4">
+
+<div class="col-lg-7">
+
+<div class="card shadow-sm">
+
+<div class="card-body">
+
+<h5>欠款天數分析</h5>
+
+<!-- 之後放 chart -->
+
+<div style="height:300px;background:#f1f3f5;border-radius:6px">
+<canvas id="daysChart"></canvas>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+
+<div class="col-lg-5">
+
+<div class="card shadow-sm">
+
+<div class="card-body">
+
+<h5>欠款人排行</h5>
+
+<!-- 之後放 chart -->
+<div style="height:300px;background:#f1f3f5;border-radius:6px">
+<canvas id="personChart" style="width:100%"></canvas>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- TABLE -->
+
+<div class="card shadow-sm">
+
+<div class="card-body">
+
+<h5 class="mb-3">欠款明細</h5>
+
+<div class="table-responsive">
+
+<table class="table table-striped table-hover">
+
+<thead>
+
+<tr>
+
+<th>流水號</th>
+<th>欠款日期</th>
+<th>欠款人</th>
+<th>金額</th>
+<th>欠款說明</th>
+<th>欠款天數</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+<!-- Flask loop -->
+
+{% for row in data %}
+
+<tr>
+
+<td>{{ row.欠款流水號 }}</td>
+
+<td>{{ row.欠款日期 }}</td>
+
+<td>{{ row.欠款人編號 }}</td>
+
+<td>$ {{ row.金額 }}</td>
+
+<td>{{ row.欠款說明 }}</td>
+
+<td>{{ row.欠款天數 }}</td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+</div>
+
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+
+const chartData = {{ chart_data | tojson }};
+const personData = {{ person_chart | tojson | safe }};
+
+const barWidth = 80;
+
+new Chart(document.getElementById("daysChart"), {
+
+type: "bar",
+
+data: {
+
+labels: chartData.labels,
+
+datasets: [{
+
+label: "欠款天數",
+
+data: chartData.values,
+
+backgroundColor: "#3b82f6"
+
+}]
+
+}
+
+});
+
+new Chart(document.getElementById("personChart"), {
+
+type: "bar",
+
+data: {
+
+labels: personData.labels,
+
+datasets: [{
+
+label: "累計金額",
+
+data: personData.values,
+
+backgroundColor: "#FFA042"
+
+}]
+
+},
+
+options: {
+
+indexAxis: "y", // 橫向長條圖
+
+responsive: true,
+maintainAspectRatio: false
+
+}
+
+});
+
+
+</script>
+
+</body>
+
+</html>
